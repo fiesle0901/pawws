@@ -84,30 +84,37 @@ export const Home: React.FC = () => {
           </div>
         </div>
 
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center" id="animals">Animals in need</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 scroll-mt-24">
-        {animals?.map((animal) => (
-          <div key={animal.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-            <div className="h-48 bg-gray-200 w-full object-cover relative overflow-hidden">
-               <img 
-                 src={animal.image_url || DEFAULT_PET_IMAGE} 
-                 alt={animal.name} 
-                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-               />
-               <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-primary uppercase tracking-wide">
-                 {animal.status}
-               </div>
+        <div className="bg-gradient-to-b from-primary-100/50 to-white rounded-3xl p-8 md:p-12 mb-20">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center" id="animals">Animals in need</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-mt-24">
+          {animals?.map((animal) => (
+            <div key={animal.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
+              <div className="h-48 bg-gray-200 w-full object-cover relative overflow-hidden shrink-0">
+                 <img 
+                   src={animal.image_url || DEFAULT_PET_IMAGE} 
+                   alt={animal.name} 
+                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                 />
+                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-primary uppercase tracking-wide">
+                   {animal.status}
+                 </div>
+              </div>
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{animal.name}</h3>
+                <p className="text-gray-600 mb-4 line-clamp-3">{animal.bio}</p>
+                <Link to={`/animals/${animal.id}`} className="mt-auto">
+                  <Button className="w-full" variant="secondary">Help {animal.name}</Button>
+                </Link>
+              </div>
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{animal.name}</h3>
-              <p className="text-gray-600 mb-4 line-clamp-3">{animal.bio}</p>
-              <Link to={`/animals/${animal.id}`}>
-                <Button className="w-full" variant="secondary">View Journey</Button>
-              </Link>
+          ))}
+          {animals?.length === 0 && (
+            <div className="col-span-full text-center py-12 text-gray-500">
+              No animals are currently listed. Check back soon!
             </div>
+          )}
           </div>
-        ))}
-      </div>
+        </div>
 
         <div className="text-center bg-primary-50 rounded-2xl p-10 md:p-16">
           <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to make a difference?</h3>

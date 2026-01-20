@@ -11,7 +11,9 @@ from app.db.base import Base
 # Import all models to ensure they are registered with Base.metadata
 from app.auth.models import User
 from app.animals.models import Animal
+from app.animals.models import Animal
 from app.milestones.models import Milestone
+from app.donations.models import Donation, AdminQR
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

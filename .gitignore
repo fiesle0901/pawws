@@ -12,6 +12,9 @@ __pycache__/
 .env
 .env.*
 
+# Uploads
+backend/uploads/
+
 # Node / Frontend
 frontend/node_modules/
 frontend/dist/

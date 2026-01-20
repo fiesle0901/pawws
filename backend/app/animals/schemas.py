@@ -22,8 +22,11 @@ class AnimalResponse(AnimalBase):
     admission_date: datetime
     milestones: List[MilestoneResponse] = []
     
+    image_url: Optional[str] = None 
+    
     class Config:
         from_attributes = True
+
 
 class AnimalListResponse(BaseModel):
     animals: List[AnimalResponse]

@@ -48,3 +48,19 @@ export interface AuthResponse {
   access_token: string;
   token_type: string;
 }
+
+export interface Donation {
+  id: number;
+  milestone_id: number;
+  user_id?: number;
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  proof_url?: string;
+}
+
+export interface CreateDonationData {
+  milestone_id: number;
+  amount: number;
+  proof: File;
+}

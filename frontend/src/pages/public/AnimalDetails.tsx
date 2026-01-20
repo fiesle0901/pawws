@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { Container } from '../../components/ui/Layout';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
-import { Input } from '../../components/ui/Input';
+import { DonationModal } from '../../components/DonationModal';
 import type { Animal, Milestone } from '../../types';
 import { DEFAULT_PET_IMAGE } from '../../constants';
 
@@ -15,9 +15,7 @@ interface AnimalWithMilestones extends Animal {
 
 export const AnimalDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
-  const [donationAmount, setDonationAmount] = useState<number | ''>('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const { data: animal, isLoading } = useQuery<AnimalWithMilestones>({
@@ -25,18 +23,6 @@ export const AnimalDetails: React.FC = () => {
     queryFn: async () => {
       const res = await api.get(`/animals/${id}`);
       return res.data;
-    }
-  });
-
-  const donateMutation = useMutation({
-    mutationFn: async ({ milestoneId, amount }: { milestoneId: number; amount: number }) => {
-      await api.post(`/animals/${id}/milestones/${milestoneId}/donate`, { amount });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['animal', id] });
-      setSelectedMilestone(null);
-      setDonationAmount('');
-      setIsSuccessModalOpen(true);
     }
   });
 
@@ -126,49 +112,14 @@ export const AnimalDetails: React.FC = () => {
       </div>
 
       {/* Donation Modal */}
-      <Modal 
-        isOpen={!!selectedMilestone} 
-        onClose={() => setSelectedMilestone(null)} 
-        title={`Fund: ${selectedMilestone?.title}`}
-      >
-        <div className="space-y-4">
-          <p className="text-gray-600 text-sm">
-             Your donation helps {animal.name} complete this critical step in their recovery.
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-             {[5, 10, 25].map(amount => (
-               <button 
-                 key={amount}
-                 className={`py-2 px-4 rounded-md border text-sm font-medium ${
-                   donationAmount === amount 
-                     ? 'border-primary bg-primary/10 text-primary' 
-                     : 'border-gray-200 hover:border-primary hover:text-primary'
-                 }`}
-                 onClick={() => setDonationAmount(amount)}
-               >
-                 PHP {amount}
-               </button>
-             ))}
-          </div>
-          <Input 
-             label="Or Custom Amount (PHP)"
-             type="number"
-             value={donationAmount}
-             onChange={(e) => setDonationAmount(parseInt(e.target.value) || '')}
-             placeholder="Enter amount"
-          />
-          <Button 
-            className="w-full" 
-            disabled={!donationAmount || donateMutation.isPending}
-            onClick={() => selectedMilestone && donationAmount && donateMutation.mutate({ 
-              milestoneId: selectedMilestone.id, 
-              amount: Number(donationAmount) 
-            })}
-          >
-            {donateMutation.isPending ? 'Processing...' : 'Complete Donation'}
-          </Button>
-        </div>
-      </Modal>
+      {selectedMilestone && (
+        <DonationModal
+          isOpen={!!selectedMilestone}
+          onClose={() => setSelectedMilestone(null)}
+          milestoneId={selectedMilestone.id}
+          milestoneTitle={selectedMilestone.title}
+        />
+      )}
 
       {/* Success Modal */}
       <Modal

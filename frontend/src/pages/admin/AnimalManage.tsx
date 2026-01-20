@@ -87,7 +87,7 @@ export const AnimalManage: React.FC = () => {
                       {milestone.status}
                     </div>
                   </div>
-                  {/* Status toggles would go here */}
+
                 </div>
               </li>
             ))

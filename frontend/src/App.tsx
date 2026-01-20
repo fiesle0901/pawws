@@ -8,6 +8,8 @@ import { AnimalDetails } from './pages/public/AnimalDetails';
 import { AnimalOnboarding } from './pages/admin/AnimalOnboarding';
 import { AnimalManage } from './pages/admin/AnimalManage';
 import { Dashboard } from './pages/admin/Dashboard';
+import { DonationReview } from './pages/admin/DonationReview';
+import { Settings } from './pages/admin/Settings';
 import { Login } from './pages/auth/Login';
 import { Signup } from './pages/auth/Signup';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -84,6 +86,16 @@ function App() {
               <Route path="/admin/animals/:id/manage" element={
                 <ProtectedRoute>
                   <AnimalManage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/donations" element={
+                <ProtectedRoute>
+                  <DonationReview />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/settings" element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               } />
               

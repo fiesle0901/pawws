@@ -19,10 +19,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Resolve absolute path to static directory
-# app/main.py is in backend/app, so parent is backend/app
 BASE_DIR = Path(__file__).resolve().parent
+# Mount static files
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+
 
 app.add_middleware(
     CORSMiddleware,
