@@ -14,10 +14,24 @@ export const AnimalOnboarding: React.FC = () => {
     bio: '',
     journey_story: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const createAnimal = useMutation({
-    mutationFn: async (data: CreateAnimalData) => {
-      const response = await api.post('/animals/', data);
+    mutationFn: async (data: CreateAnimalData & { image?: File | null }) => {
+      const form = new FormData();
+      form.append('name', data.name);
+      form.append('bio', data.bio || '');
+      form.append('journey_story', data.journey_story || '');
+      form.append('status', 'recovering');
+      if (imageFile) {
+        form.append('image', imageFile);
+      }
+
+      const response = await api.post('/animals/', form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     },
     onSuccess: (data) => {
@@ -27,7 +41,13 @@ export const AnimalOnboarding: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createAnimal.mutate(formData);
+    createAnimal.mutate({ ...formData, image: imageFile });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
   };
 
   return (
@@ -46,6 +66,17 @@ export const AnimalOnboarding: React.FC = () => {
           placeholder="e.g. Max"
         />
         
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Photo</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+          />
+          <p className="text-xs text-gray-400">If no image is uploaded, a default one will be used.</p>
+        </div>
+
         <div className="space-y-1">
           <label className="block text-sm font-medium text-gray-700">Bio</label>
           <textarea

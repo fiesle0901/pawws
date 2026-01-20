@@ -37,8 +37,7 @@ export const AnimalManage: React.FC = () => {
     onSuccess: () => {
       setIsModalOpen(false);
       setNewMilestone({ title: '', description: '', cost: 0 });
-      queryClient.invalidateQueries({ queryKey: ['animal', id] }); // If milestones are in animal
-      // Or if I add a milestones query.
+      queryClient.invalidateQueries({ queryKey: ['animal', id] }); 
     }
   });
 
@@ -68,7 +67,7 @@ export const AnimalManage: React.FC = () => {
         <ul className="divide-y divide-gray-100">
           {milestones.length === 0 ? (
             <li className="px-6 py-8 text-center text-gray-500">
-              No milestones yet. Add the first step of recovery!
+              No milestones yet. Add the first step of recovery.
             </li>
           ) : (
             milestones.map((milestone) => (
@@ -79,7 +78,7 @@ export const AnimalManage: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <div className="text-sm font-medium text-gray-900">${milestone.current_amount} / ${milestone.cost}</div>
+                    <div className="text-sm font-medium text-gray-900">PHP {milestone.current_amount} / PHP {milestone.cost}</div>
                     <div className={`text-xs px-2 py-0.5 rounded-full inline-block ${
                       milestone.status === 'completed' ? 'bg-green-100 text-green-800' :
                       milestone.status === 'funded' ? 'bg-blue-100 text-blue-800' :
@@ -106,7 +105,7 @@ export const AnimalManage: React.FC = () => {
             placeholder="e.g. Initial Checkup"
           />
           <Input 
-            label="Cost ($)" 
+            label="Cost (PHP)" 
             type="number"
             value={newMilestone.cost}
             onChange={e => setNewMilestone({...newMilestone, cost: parseInt(e.target.value)})}

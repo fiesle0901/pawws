@@ -30,7 +30,7 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
                     item.status === 'funded' ? 'bg-blue-500' : 'bg-gray-400'
                   }`}>
                      {item.status === 'completed' ? '✓' : 
-                      item.status === 'funded' ? '$' : '•'}
+                      item.status === 'funded' ? '₱' : '•'}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
@@ -44,8 +44,8 @@ export const Timeline: React.FC<TimelineProps> = ({ items }) => {
                   {item.amount && (
                      <div className="text-right text-sm whitespace-nowrap text-gray-500">
                        <span className={item.amount.current >= item.amount.total ? 'text-green-600 font-bold' : ''}>
-                         ${item.amount.current}
-                       </span> / ${item.amount.total}
+                         PHP {item.amount.current}
+                       </span> / PHP {item.amount.total}
                      </div>
                   )}
                 </div>

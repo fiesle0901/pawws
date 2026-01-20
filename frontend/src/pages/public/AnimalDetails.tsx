@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import type { Animal, Milestone } from '../../types';
+import { DEFAULT_PET_IMAGE } from '../../constants';
 
 interface AnimalWithMilestones extends Animal {
   milestones: Milestone[];
@@ -50,11 +51,7 @@ export const AnimalDetails: React.FC = () => {
         {/* Left Column: Story & Info */}
         <div className="lg:col-span-2 space-y-8">
            <div className="h-64 md:h-96 bg-gray-200 rounded-xl overflow-hidden relative">
-             {animal.image_url ? (
-               <img src={animal.image_url} alt={animal.name} className="w-full h-full object-cover" />
-             ) : (
-               <div className="flex items-center justify-center h-full text-gray-400">No Image</div>
-             )}
+               <img src={animal.image_url || DEFAULT_PET_IMAGE} alt={animal.name} className="w-full h-full object-cover" />
            </div>
            
            <div>
@@ -87,7 +84,7 @@ export const AnimalDetails: React.FC = () => {
                             milestone.status === 'funded' ? 'bg-blue-500' : 'bg-gray-100'
                           }`}>
                             {milestone.status === 'completed' ? '✓' : 
-                             milestone.status === 'funded' ? '$' : '•'}
+                             milestone.status === 'funded' ? '₱' : '•'}
                           </span>
                         </div>
                         <div className="min-w-0 flex-1 pt-1.5">
@@ -99,8 +96,8 @@ export const AnimalDetails: React.FC = () => {
                           
                           <div className="mt-2">
                              <div className="flex justify-between text-xs mb-1">
-                               <span>${milestone.current_amount} raised</span>
-                               <span className="text-gray-400">Goal: ${milestone.cost}</span>
+                               <span>PHP {milestone.current_amount} raised</span>
+                               <span className="text-gray-400">Goal: PHP {milestone.cost}</span>
                              </div>
                              <div className="w-full bg-gray-100 rounded-full h-1.5 mb-3">
                                 <div className="bg-primary h-1.5 rounded-full" style={{ width: `${Math.min(100, (milestone.current_amount / milestone.cost) * 100)}%` }}></div>
@@ -149,12 +146,12 @@ export const AnimalDetails: React.FC = () => {
                  }`}
                  onClick={() => setDonationAmount(amount)}
                >
-                 ${amount}
+                 PHP {amount}
                </button>
              ))}
           </div>
           <Input 
-             label="Or Custom Amount ($)"
+             label="Or Custom Amount (PHP)"
              type="number"
              value={donationAmount}
              onChange={(e) => setDonationAmount(parseInt(e.target.value) || '')}

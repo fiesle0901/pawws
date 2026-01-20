@@ -29,3 +29,22 @@ export interface CreateMilestoneData {
   description: string;
   cost: number;
 }
+
+export interface User {
+  id: number;
+  email: string;
+  is_active: boolean;
+  role: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export type SignupCredentials = LoginCredentials;
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+}

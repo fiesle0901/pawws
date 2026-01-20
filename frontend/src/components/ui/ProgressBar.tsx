@@ -21,7 +21,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     <div className={`w-full ${className}`}>
       <div className="flex justify-between mb-1 text-sm font-medium">
         {label && <span className="text-gray-700">{label}</span>}
-        {showAmount && <span className="text-gray-500">${value} / ${total}</span>}
+        {showAmount && <span className="text-gray-500">PHP {value} / PHP {total}</span>}
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2.5">
         <div 

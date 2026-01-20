@@ -11,22 +11,54 @@ export const Container: React.FC<ContainerProps> = ({ children, className = '' }
   </div>
 );
 
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
 export const Navbar: React.FC = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <nav className="bg-white shadow border-b border-gray-100">
       <Container>
         <div className="flex justify-between h-16">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center cursor-pointer">
               <span className="text-2xl font-bold text-primary">Paws-in-Progress</span>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="#" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Animals</a>
-            <a href="#" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Shelters</a>
-            <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
-              Login
-            </button>
+            {user?.role === 'admin' ? (
+               <Link to="/admin" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Dashboard</Link>
+            ) : (
+              <>
+                <Link to="/" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Animals</Link>
+                <Link to="/donate" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Donate</Link>
+              </>
+            )}
+
+            {isAuthenticated ? (
+              <>
+                <button 
+                  onClick={handleLogout}
+                  className="bg-white text-gray-500 border border-gray-300 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link 
+                to="/login"
+                className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </Container>
