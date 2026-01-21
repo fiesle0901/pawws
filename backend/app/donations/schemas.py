@@ -16,6 +16,8 @@ class DonationResponse(BaseModel):
     created_at: datetime
     
     proof_url: Optional[str] = None
+    animal_name: Optional[str] = None
+    animal_id: Optional[int] = None
 
     class Config:
         from_attributes = True

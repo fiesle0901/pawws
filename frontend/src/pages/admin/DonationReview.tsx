@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../components/ui/Layout';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { useDonations, useUpdateDonationStatus, fetchProofBlob } from '../../hooks/useDonations';
 
 export const DonationReview: React.FC = () => {
+    const navigate = useNavigate();
     const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
 
     const handleViewProof = async (proofUrl: string) => {
@@ -41,6 +43,7 @@ export const DonationReview: React.FC = () => {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pet Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proof</th>
@@ -52,6 +55,9 @@ export const DonationReview: React.FC = () => {
                             <tr key={donation.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{donation.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">PHP {donation.amount}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {donation.animal_name || '-'}
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                         donation.status === 'approved' ? 'bg-green-100 text-green-800' :
@@ -73,6 +79,15 @@ export const DonationReview: React.FC = () => {
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                    {donation.animal_id && (
+                                        <Button 
+                                            size="sm" 
+                                            variant="outline"
+                                            onClick={() => navigate(`/admin/animals/${donation.animal_id}/manage`)}
+                                        >
+                                            View
+                                        </Button>
+                                    )}
                                     {donation.status === 'pending' && (
                                         <>
                                             <Button 

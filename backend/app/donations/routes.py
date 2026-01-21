@@ -2,6 +2,7 @@ from typing import List, Annotated
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
+from sqlalchemy.orm import joinedload
 from app.db.base import get_db
 from app.auth.deps import get_current_user, get_current_active_superuser
 from app.auth.models import User
@@ -11,9 +12,6 @@ from app.milestones.models import Milestone, MilestoneStatus
 from app.core.config import settings
 
 router = APIRouter()
-
-
-
 
 @router.post("/", response_model=DonationResponse)
 async def create_donation(
@@ -57,9 +55,6 @@ async def get_admin_qr(db: AsyncSession = Depends(get_db)):
     
     return Response(content=qr.image_data, media_type=qr.image_content_type)
 
-
-
-
 @router.get("/", response_model=List[DonationResponse])
 async def list_donations(
     skip: int = 0, 
@@ -67,11 +62,20 @@ async def list_donations(
     current_user: User = Depends(get_current_active_superuser),
     db: AsyncSession = Depends(get_db)
 ):
-    result = await db.execute(select(Donation).order_by(desc(Donation.created_at)).offset(skip).limit(limit))
+    result = await db.execute(
+        select(Donation)
+        .options(joinedload(Donation.milestone).joinedload(Milestone.animal))
+        .order_by(desc(Donation.created_at))
+        .offset(skip)
+        .limit(limit)
+    )
     donations = result.scalars().all()
     
     for d in donations:
         d.proof_url = f"{settings.BASE_URL}/donations/{d.id}/proof"
+        if d.milestone and d.milestone.animal:
+            d.animal_name = d.milestone.animal.name
+            d.animal_id = d.milestone.animal.id
         
     return donations
 

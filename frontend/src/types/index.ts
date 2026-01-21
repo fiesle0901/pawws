@@ -66,6 +66,8 @@ export interface Donation {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   proof_url?: string;
+  animal_name?: string;
+  animal_id?: number;
 }
 
 export interface CreateDonationData {

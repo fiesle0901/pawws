@@ -25,7 +25,9 @@ class Donation(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now()) 
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
+    
+    milestone = relationship("Milestone", lazy="joined") 
 
 class AdminQR(Base):
     __tablename__ = "admin_qr"
