@@ -12,7 +12,7 @@ export const Container: React.FC<ContainerProps> = ({ children, className = '' }
 );
 
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 export const Navbar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();

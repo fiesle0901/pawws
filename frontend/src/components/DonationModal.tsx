@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { api } from '../lib/api';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Modal } from './ui/Modal';
+import { useDonationQr, useDonate } from '../hooks/useDonations';
 
 interface DonationModalProps {
     isOpen: boolean;
@@ -17,37 +16,28 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, m
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [step, setStep] = useState<1 | 2>(1); // 1: QR & Amount, 2: Upload Proof
 
-    const { data: qrImage, isLoading: isQrLoading } = useQuery({
-        queryKey: ['admin-qr'],
-        queryFn: async () => {
-            const res = await api.get('/donations/qr', { responseType: 'blob' });
-            return URL.createObjectURL(res.data);
-        },
-        enabled: isOpen,
-        retry: 1
-    });
+    const { data: qrImage, isLoading: isQrLoading } = useDonationQr();
 
-    const donationMutation = useMutation({
-        mutationFn: async () => {
-             const formData = new FormData();
-             formData.append('milestone_id', milestoneId.toString());
-             formData.append('amount', amount.toString());
-             if (proofFile) {
-                 formData.append('proof', proofFile);
+    const donate = useDonate();
+
+    const handleDonation = () => {
+         const formData = new FormData();
+         formData.append('milestone_id', milestoneId.toString());
+         formData.append('amount', amount.toString());
+         if (proofFile) {
+             formData.append('proof', proofFile);
+         }
+         
+         donate.mutate(formData, {
+             onSuccess: () => {
+                onClose();
+                alert("Donation submitted! Custom admins will review it.");
+                setStep(1);
+                setAmount(100);
+                setProofFile(null);
              }
-             
-             await api.post('/donations/', formData, {
-                 headers: { 'Content-Type': 'multipart/form-data' }
-             });
-        },
-        onSuccess: () => {
-            onClose();
-            alert("Donation submitted! Custom admins will review it.");
-            setStep(1);
-            setAmount(100);
-            setProofFile(null);
-        }
-    });
+         });
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={`Donate to: ${milestoneTitle}`}>
@@ -97,10 +87,10 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, m
                          <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
                          <Button 
                             className="flex-1" 
-                            disabled={!proofFile || donationMutation.isPending}
-                            onClick={() => donationMutation.mutate()}
+                            disabled={!proofFile || donate.isPending}
+                            onClick={handleDonation}
                          >
-                            {donationMutation.isPending ? 'Submitting...' : 'Submit Proof'}
+                            {donate.isPending ? 'Submitting...' : 'Submit Proof'}
                          </Button>
                     </div>
                 </div>

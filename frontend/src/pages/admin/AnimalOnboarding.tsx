@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import { api } from '../../lib/api';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Container } from '../../components/ui/Layout';
 import type { CreateAnimalData } from '../../types';
+import { useCreateAnimal } from '../../hooks/useAnimals';
 
 export const AnimalOnboarding: React.FC = () => {
   const navigate = useNavigate();
@@ -16,32 +15,23 @@ export const AnimalOnboarding: React.FC = () => {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const createAnimal = useMutation({
-    mutationFn: async (data: CreateAnimalData & { image?: File | null }) => {
-      const form = new FormData();
-      form.append('name', data.name);
-      form.append('bio', data.bio || '');
-      form.append('journey_story', data.journey_story || '');
-      form.append('status', 'recovering');
-      if (imageFile) {
-        form.append('image', imageFile);
-      }
-
-      const response = await api.post('/animals/', form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    },
-    onSuccess: (data) => {
-      navigate(`/admin/animals/${data.id}/manage`);
-    },
-  });
+  const createAnimal = useCreateAnimal();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createAnimal.mutate({ ...formData, image: imageFile });
+    const form = new FormData();
+    form.append('name', formData.name);
+    form.append('bio', formData.bio || '');
+    form.append('journey_story', formData.journey_story || '');
+    form.append('status', 'recovering');
+    if (imageFile) {
+      form.append('image', imageFile);
+    }
+    createAnimal.mutate(form, {
+      onSuccess: (data) => {
+          navigate(`/admin/animals/${data.id}/manage`);
+      }
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

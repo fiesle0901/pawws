@@ -6,6 +6,15 @@ export interface Animal {
   status: string;
   journey_story: string;
   image_url: string;
+  milestones?: {
+      id: number;
+      animal_id: number;
+      title: string;
+      description?: string;
+      cost: number;
+      current_amount: number;
+      status: 'pending' | 'funded' | 'completed';
+  }[];
 }
 
 export interface Milestone {

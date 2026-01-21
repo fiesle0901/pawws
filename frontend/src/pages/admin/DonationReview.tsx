@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../lib/api';
 import { Container } from '../../components/ui/Layout';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
-import type { Donation } from '../../types';
+import { useDonations, useUpdateDonationStatus, fetchProofBlob } from '../../hooks/useDonations';
 
 export const DonationReview: React.FC = () => {
-    const queryClient = useQueryClient();
     const [selectedProofUrl, setSelectedProofUrl] = useState<string | null>(null);
 
     const handleViewProof = async (proofUrl: string) => {
         try {
-            const url = new URL(proofUrl);
-            const res = await api.get(url.pathname + url.search, { responseType: 'blob' });
-            const blobUrl = URL.createObjectURL(res.data);
+            const blob = await fetchProofBlob(proofUrl);
+            const blobUrl = URL.createObjectURL(blob);
             setSelectedProofUrl(blobUrl);
         } catch (err) {
             console.error("Failed to load proof", err);
@@ -29,22 +25,9 @@ export const DonationReview: React.FC = () => {
         }
     };
     
-    const { data: donations, isLoading } = useQuery<Donation[]>({
-        queryKey: ['admin-donations'],
-        queryFn: async () => {
-            const res = await api.get('/donations/');
-            return res.data;
-        }
-    });
+    const { data: donations, isLoading } = useDonations();
 
-    const updateStatus = useMutation({
-        mutationFn: async ({ id, status }: { id: number, status: 'approved' | 'rejected' }) => {
-            await api.put(`/donations/${id}/status`, { status });
-        },
-        onSuccess: () => {
-             queryClient.invalidateQueries({ queryKey: ['admin-donations'] });
-        }
-    });
+    const updateStatus = useUpdateDonationStatus();
 
     if (isLoading) return <Container className="py-8">Loading...</Container>;
 

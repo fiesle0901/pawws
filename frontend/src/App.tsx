@@ -12,7 +12,7 @@ import { DonationReview } from './pages/admin/DonationReview';
 import { Settings } from './pages/admin/Settings';
 import { Login } from './pages/auth/Login';
 import { Signup } from './pages/auth/Signup';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 
 const queryClient = new QueryClient();
 
@@ -21,7 +21,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   if (isLoading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
+    return <div>Loading...</div>; 
   }
 
   if (!isAuthenticated) {
@@ -48,62 +48,58 @@ function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
-          <Layout>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/login" element={
-                <PublicOnlyRoute>
-                  <Login />
-                </PublicOnlyRoute>
-              } />
-              <Route path="/signup" element={
-                <PublicOnlyRoute>
-                  <Signup />
-                </PublicOnlyRoute>
-              } />
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/login" element={
+              <PublicOnlyRoute>
+                <Login />
+              </PublicOnlyRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicOnlyRoute>
+                <Signup />
+              </PublicOnlyRoute>
+            } />
 
-              {/* Protected Routes */}
-              <Route path="/animals/:id" element={
-                <ProtectedRoute>
-                  <AnimalDetails />
-                </ProtectedRoute>
-              } />
+            <Route path="/animals/:id" element={
+              <ProtectedRoute>
+                <AnimalDetails />
+              </ProtectedRoute>
+            } />
 
-              <Route path="/admin" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/animals/new" element={
-                <ProtectedRoute>
-                  <AnimalOnboarding />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/animals/:id/manage" element={
-                <ProtectedRoute>
-                  <AnimalManage />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/donations" element={
-                <ProtectedRoute>
-                  <DonationReview />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Layout>
-        </Router>
-      </AuthProvider>
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/animals/new" element={
+              <ProtectedRoute>
+                <AnimalOnboarding />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/animals/:id/manage" element={
+              <ProtectedRoute>
+                <AnimalManage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/donations" element={
+              <ProtectedRoute>
+                <DonationReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Layout>
+      </Router>
     </QueryClientProvider>
   );
 }

@@ -1,19 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
 import { DEFAULT_PET_IMAGE } from '../../constants';
 import { Link } from 'react-router-dom';
-import { api } from '../../lib/api';
 import { Container } from '../../components/ui/Layout';
 import { Button } from '../../components/ui/Button';
-import type { Animal } from '../../types';
+import { useAnimals } from '../../hooks/useAnimals';
 
 export const Dashboard: React.FC = () => {
-  const { data: animals, isLoading } = useQuery<Animal[]>({
-    queryKey: ['animals'],
-    queryFn: async () => {
-      const res = await api.get('/animals/');
-      return res.data;
-    }
-  });
+  const { data: animals, isLoading } = useAnimals();
 
   if (isLoading) return <Container className="py-8">Loading dashboard...</Container>;
 

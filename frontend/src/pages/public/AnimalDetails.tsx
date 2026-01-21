@@ -1,30 +1,19 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
 import { Container } from '../../components/ui/Layout';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { DonationModal } from '../../components/DonationModal';
-import type { Animal, Milestone } from '../../types';
+import { useAnimal } from '../../hooks/useAnimals';
+import type { Milestone } from '../../types';
 import { DEFAULT_PET_IMAGE } from '../../constants';
-
-interface AnimalWithMilestones extends Animal {
-  milestones: Milestone[];
-}
 
 export const AnimalDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  const { data: animal, isLoading } = useQuery<AnimalWithMilestones>({
-    queryKey: ['animal', id],
-    queryFn: async () => {
-      const res = await api.get(`/animals/${id}`);
-      return res.data;
-    }
-  });
+  const { data: animal, isLoading } = useAnimal(id);
 
   if (isLoading) return <Container className="py-8">Loading journey...</Container>;
   if (!animal) return <Container className="py-8">Animal not found</Container>;
@@ -57,10 +46,10 @@ export const AnimalDetails: React.FC = () => {
             <div className="flow-root">
                {/* Custom Timeline rendering for this page to inject buttons */}
                <ul className="-mb-8">
-                {animal.milestones?.map((milestone, idx) => (
+                {(animal.milestones || []).map((milestone, idx) => (
                   <li key={milestone.id}>
                     <div className="relative pb-12">
-                      {idx !== animal.milestones.length - 1 ? (
+                      {idx !== (animal.milestones || []).length - 1 ? (
                         <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
                       ) : null}
                       <div className="relative flex space-x-3">

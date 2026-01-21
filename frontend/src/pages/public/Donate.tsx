@@ -1,12 +1,10 @@
 import { useEffect } from 'react';
 import { DEFAULT_PET_IMAGE } from '../../constants';
-import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { api } from '../../lib/api';
+import { useAuth } from '../../hooks/useAuth';
+import { useAnimals } from '../../hooks/useAnimals';
 import { Container } from '../../components/ui/Layout';
 import { Button } from '../../components/ui/Button';
-import type { Animal } from '../../types';
 
 export const Donate: React.FC = () => {
   const { user } = useAuth();
@@ -17,13 +15,8 @@ export const Donate: React.FC = () => {
       navigate('/admin');
     }
   }, [user, navigate]);
-  const { data: animals, isLoading } = useQuery<Animal[]>({
-    queryKey: ['animals'],
-    queryFn: async () => {
-      const res = await api.get('/animals/');
-      return res.data;
-    }
-  });
+  
+  const { data: animals, isLoading } = useAnimals();
 
   if (isLoading) return <Container className="py-8">Loading available animals...</Container>;
 

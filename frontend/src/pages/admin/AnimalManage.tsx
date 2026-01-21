@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../lib/api';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
 import { Container } from '../../components/ui/Layout';
-import type { Animal, Milestone, CreateMilestoneData } from '../../types';
+import type { Milestone, CreateMilestoneData } from '../../types';
+import { useAnimal, useAddMilestone } from '../../hooks/useAnimals';
 
 export const AnimalManage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newMilestone, setNewMilestone] = useState<CreateMilestoneData>({
     title: '',
@@ -19,32 +17,14 @@ export const AnimalManage: React.FC = () => {
     cost: 0,
   });
 
-  const { data: animal, isLoading } = useQuery<Animal>({
-    queryKey: ['animal', id],
-    queryFn: async () => {
-       const res = await api.get(`/animals/${id}`);
-       return res.data;
-    }
-  });
+  const { data: animal, isLoading } = useAnimal(id);
 
-
-  
-  const createMilestone = useMutation({
-    mutationFn: async (data: CreateMilestoneData) => {
-      const res = await api.post(`/animals/${id}/milestones`, data);
-      return res.data;
-    },
-    onSuccess: () => {
-      setIsModalOpen(false);
-      setNewMilestone({ title: '', description: '', cost: 0 });
-      queryClient.invalidateQueries({ queryKey: ['animal', id] }); 
-    }
-  });
+  const createMilestone = useAddMilestone(id);
 
   if (isLoading) return <Container>Loading...</Container>;
   if (!animal) return <Container>Animal not found</Container>;
 
-  const milestones: Milestone[] = (animal as any).milestones || []; 
+  const milestones: Milestone[] = animal.milestones || []; 
 
   return (
     <Container className="py-8">
@@ -96,7 +76,15 @@ export const AnimalManage: React.FC = () => {
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Milestone">
-        <form onSubmit={(e) => { e.preventDefault(); createMilestone.mutate(newMilestone); }} className="space-y-4">
+        <form onSubmit={(e) => { 
+          e.preventDefault(); 
+          createMilestone.mutate(newMilestone, {
+            onSuccess: () => {
+              setIsModalOpen(false);
+              setNewMilestone({ title: '', description: '', cost: 0 });
+            }
+          }); 
+        }} className="space-y-4">
           <Input 
             label="Title" 
             value={newMilestone.title}
