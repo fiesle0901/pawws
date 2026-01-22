@@ -13,6 +13,7 @@ import { Settings } from './pages/admin/Settings';
 import { Login } from './pages/auth/Login';
 import { Signup } from './pages/auth/Signup';
 import { useAuth } from './hooks/useAuth';
+import { UserDonations } from './pages/public/UserDonations';
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,12 @@ function App() {
             <Route path="/animals/:id" element={
               <ProtectedRoute>
                 <AnimalDetails />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/my-donations" element={
+              <ProtectedRoute>
+                <UserDonations />
               </ProtectedRoute>
             } />
 

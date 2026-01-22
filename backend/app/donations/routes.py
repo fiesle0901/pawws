@@ -45,6 +45,27 @@ async def create_donation(
     donation.proof_url = f"{settings.BASE_URL}/donations/{donation.id}/proof"
     return donation
 
+@router.get("/my", response_model=List[DonationResponse])
+async def list_my_donations(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(Donation)
+        .options(joinedload(Donation.milestone).joinedload(Milestone.animal))
+        .where(Donation.user_id == current_user.id)
+        .order_by(desc(Donation.created_at))
+    )
+    donations = result.scalars().all()
+    
+    for d in donations:
+        d.proof_url = f"{settings.BASE_URL}/donations/{d.id}/proof"
+        if d.milestone and d.milestone.animal:
+            d.animal_name = d.milestone.animal.name
+            d.animal_id = d.milestone.animal.id
+            
+    return donations
+
 @router.get("/qr")
 async def get_admin_qr(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(AdminQR).limit(1))

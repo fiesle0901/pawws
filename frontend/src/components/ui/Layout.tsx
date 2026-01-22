@@ -39,6 +39,9 @@ export const Navbar: React.FC = () => {
               <>
                 <Link to="/" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Animals</Link>
                 <Link to="/donate" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Donate</Link>
+                {isAuthenticated && (
+                   <Link to="/my-donations" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">My Donations</Link>
+                )}
               </>
             )}
 

@@ -12,6 +12,16 @@ export function useDonations() {
   });
 }
 
+export function useMyDonations() {
+  return useQuery<Donation[]>({
+    queryKey: ['my-donations'],
+    queryFn: async () => {
+      const { data } = await api.get<Donation[]>('/donations/my');
+      return data;
+    }
+  });
+}
+
 export function useDonationQr() {
   return useQuery({
     queryKey: ['donation-qr'],
