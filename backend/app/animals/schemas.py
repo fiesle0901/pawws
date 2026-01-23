@@ -16,6 +16,8 @@ class AnimalCreate(AnimalBase):
 class AnimalUpdate(AnimalBase):
     name: Optional[str] = None
     status: Optional[str] = None
+    bio: Optional[str] = None
+    journey_story: Optional[str] = None
 
 class AnimalResponse(AnimalBase):
     id: int

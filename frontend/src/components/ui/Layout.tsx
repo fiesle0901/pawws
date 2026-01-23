@@ -29,7 +29,7 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link to="/" className="flex-shrink-0 flex items-center cursor-pointer">
-              <span className="text-2xl font-bold text-primary">Paws-in-Progress</span>
+              <span className="text-2xl font-bold text-primary">Pawws</span>
             </Link>
           </div>
           <div className="flex items-center space-x-4">

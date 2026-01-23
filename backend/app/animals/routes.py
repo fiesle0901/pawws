@@ -47,6 +47,43 @@ async def create_animal(
         
     return db_animal
 
+@router.put("/{animal_id}", response_model=AnimalResponse)
+async def update_animal(
+    animal_id: int,
+    name: Annotated[str, Form()] = None,
+    bio: Annotated[str, Form()] = None,
+    journey_story: Annotated[str, Form()] = None,
+    status: Annotated[str, Form()] = None,
+    image: UploadFile | None = File(None),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(Animal).options(selectinload(Animal.milestones)).where(Animal.id == animal_id))
+    db_animal = result.scalar_one_or_none()
+    
+    if not db_animal:
+        raise HTTPException(status_code=404, detail="Animal not found")
+
+    if name is not None:
+        db_animal.name = name
+    if bio is not None:
+        db_animal.bio = bio
+    if journey_story is not None:
+        db_animal.journey_story = journey_story
+    if status is not None:
+        db_animal.status = status
+        
+    if image:
+        db_animal.image_data = await image.read()
+        db_animal.image_content_type = image.content_type
+
+    await db.commit()
+    await db.refresh(db_animal)
+    
+    if db_animal.image_data:
+        db_animal.image_url = f"{settings.BASE_URL}/animals/{db_animal.id}/image"
+        
+    return db_animal
+
 @router.get("/{animal_id}/image")
 async def get_animal_image(animal_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Animal).where(Animal.id == animal_id))

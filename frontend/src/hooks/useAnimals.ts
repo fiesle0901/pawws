@@ -41,6 +41,25 @@ export function useCreateAnimal() {
   });
 }
 
+export function useUpdateAnimal(id: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: FormData) => {
+      if (!id) throw new Error("ID is required");
+      const { data: res } = await api.put(`/animals/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['animal', id] });
+      queryClient.invalidateQueries({ queryKey: ['animals'] });
+    }
+  });
+}
+
 export function useAddMilestone(animalId: string | undefined) {
   const queryClient = useQueryClient();
   return useMutation({
